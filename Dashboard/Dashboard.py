@@ -17,6 +17,8 @@ frame_genral = Frame(root, bg="grey")
 frame_genral.grid(row=0, column=0)
 
 
+
+
 uname = platform.uname()
 boot_time_timestamp = psutil.boot_time()
 bt = datetime.fromtimestamp(boot_time_timestamp)
@@ -93,9 +95,9 @@ def display_selected(choice):
     choice = clicked.get()
     if choice == "Genral Info" or "CPU" or "RAM" or "Disk" or "Network":
         clear_frame()
+        frame_genral.after_cancel(live_update)
         if choice == "Genral Info":
-            pass
-            #genral_info()
+            genral_info()
         if choice ==  "CPU":
             cpu_info()
         if choice == "RAM":
@@ -143,7 +145,8 @@ def genral_info():
         cpufrq_lbl.config(text=frq)
         disks()
         #net()
-        frame_genral.after(750, clock)
+        global live_update
+        live_update = frame_genral.after(750, clock)
     clock()
 
 
@@ -178,8 +181,9 @@ def cpu_info():
         for i, percentage in enumerate(psutil.cpu_percent(percpu=True, interval=1)):
             Label(frame_genral, text=f"Core {i}: {percentage}%").grid(row=countert, column=0, sticky='w')
             countert += 1
-        frame_genral.after(1000, clock)
-    #clock()
+        global live_update
+        live_update = frame_genral.after(1000, clock)
+    clock()
 
 
 def ram_info():
@@ -199,8 +203,9 @@ def ram_info():
         ram_lbl.config(text=ram)
         ram_free_lbl.config(text=ram_free)
         ram_used_in_percent_lbl.config(text=ram_used)
-        frame_genral.after(750, clock)
-    #clock()
+        global live_update
+        live_update = frame_genral.after(750, clock)
+    clock()
 
 
 def disk_info():
@@ -217,7 +222,7 @@ clicked.set(option[0])
 drop_menu = OptionMenu(root, clicked, *option, command=display_selected).grid(row=0, column=1)
 
 
-#genral_info()
+genral_info()
 
 
 
