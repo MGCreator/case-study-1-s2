@@ -1,1 +1,1 @@
-# case-study-1-s2
+This is my repository for the first case study in semester 2.
