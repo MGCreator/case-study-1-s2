@@ -227,10 +227,10 @@ def show_ram_graph():
 
     def up():
         
-        labels = 'Used', 'Available'
-        x = [psutil.virtual_memory().used, psutil.virtual_memory().free]
-        
         def update(i):
+            used=get_size(psutil.virtual_memory().used)
+            free=get_size(psutil.virtual_memory().free)
+            labels = f'Used {used}', f'Available {free}'
             ax.clear()
             x = [psutil.virtual_memory().used, psutil.virtual_memory().free]
             ax.pie(x, labels=labels)
