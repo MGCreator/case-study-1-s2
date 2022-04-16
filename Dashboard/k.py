@@ -1,9 +1,11 @@
-import psutil
-from tkinter import *
+from datetime import date, datetime
+import matplotlib.pyplot as plt
 
-root = Tk()
-frame_genral = Frame(root, bg="grey")
-frame_genral.grid(row=0, column=0)
+import matplotlib.animation as animation
+import psutil
+import numpy as np
+
+e = datetime.now()
 
 def get_size(bytes, suffix="B"):
     """
@@ -18,25 +20,35 @@ def get_size(bytes, suffix="B"):
             return f"{bytes:.2f}{unit}{suffix}"
         bytes /= factor
 
+time = 0
+print("speedtest-cli --json --secure >> ok.json")
+#z = [psutil.net_io_counters().bytes_recv]
+fig = plt.figure()
+ax = fig.add_subplot()
+yar = []
 
 
-ram_lbl = Label(frame_genral, text=f"RAM Used/Total: {get_size(psutil.virtual_memory().used)}/{get_size(psutil.virtual_memory().total)}")
-ram_free_lbl = Label(frame_genral, text=f"RAM Available:: {get_size(psutil.virtual_memory().free)}")
-ram_used_in_percent_lbl = Label(frame_genral, text=f"RAM Used in %: {get_size(psutil.virtual_memory().percent)}%")
+def update(i):
+    #plt.clear()
+    #ax.set_xlim([20, 60])
+    
+    x = [get_size(psutil.net_io_counters().bytes_sent)]
+    y = psutil.cpu_percent()
+    yar.append(y)
+    ax.clear()
+    ax.plot(yar)
+    time_len = len(yar)
+    plt.title("CPU Usage")
+    plt.xlabel("Time 60s")
+    plt.ylabel("Usage in %")
+    ax.set_ylim([0, 100])
+    if time_len == 60:
+        yar.pop(0)
+    # for i in range(len(yar)):
+    #     print("xar " + str(x))
+    #     print("yar " + str(e.second))
+    
 
-ram_lbl.grid(row=1, column=0, sticky='w')
-ram_free_lbl.grid(row=2, column=0, sticky='w')
-ram_used_in_percent_lbl.grid(row=3, column=0, sticky='w')
+ani = animation.FuncAnimation(fig,update, interval=1000)
 
-
-def clock():
-        ram = f"RAM Used/Total: {get_size(psutil.virtual_memory().used)}/{get_size(psutil.virtual_memory().total)}"
-        ram_free = f"RAM Available: {get_size(psutil.virtual_memory().free)}"
-        ram_used = f"RAM Used in %: {get_size(psutil.virtual_memory().percent)}%"
-        ram_lbl.config(text=ram)
-        ram_free_lbl.config(text=ram_free)
-        ram_used_in_percent_lbl.config(text=ram_used)
-        root.after(750, clock)
-clock()
-
-root.mainloop()
+plt.show()
